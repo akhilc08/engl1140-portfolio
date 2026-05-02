@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Writing Medicine: Saiakhil Chilaka</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#09070c;
+  --page:#18121e;
+  --page2:#1c1524;
+  --accent:#9b6b9b;
+  --red:#7b1530;
+  --red2:#a02040;
+  --text:#ecdaec;
+  --dim:#7a5a7a;
+  --faint:#3d2040;
+  --gold:#c9a96e;
+  --border:#2a1530;
+}
+
+html,body{
+  width:100%;height:100%;
+  background:var(--bg);
+  font-family:Georgia,'Times New Roman',serif;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  overflow:hidden;
+  min-height:100vh;
+}
+
+/* ── Book shell ── */
+#shell{
+  display:flex;flex-direction:column;align-items:center;
+  gap:16px;
+}
+
+#book-wrap{
+  position:relative;
+  /* shadow under the book */
+  filter:drop-shadow(0 24px 48px rgba(0,0,0,.9));
+}
+
+/* ── Pages ── */
+.page{
+  background:var(--page);
+  overflow:hidden;
+  position:relative;
+  padding:32px 26px 28px;
+  /* border shows book page edge */
+}
+
+/* Even (right) pages get a faint fold line on the left */
+.page:nth-child(even){
+  border-left:1px solid rgba(255,255,255,.04);
+}
+.page:nth-child(odd){
+  border-right:1px solid rgba(0,0,0,.4);
+}
+
+/* ── Cover pages ── */
+.cover{
+  background:linear-gradient(155deg,#150820 0%,#0e0516 40%,#1a0825 70%,#0b0410 100%);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center;
+  padding:40px 32px;
+}
+.cover-frame{
+  position:absolute;inset:14px;
+  border:1px solid #2d1040;
+  pointer-events:none;
+}
+.cover-frame::after{
+  content:'';
+  position:absolute;inset:5px;
+  border:1px solid #1a0828;
+}
+.ornament{
+  width:70px;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  margin:14px auto;
+}
+
+/* ── Typography helpers ── */
+.label{
+  font-size:9px;letter-spacing:3px;
+  color:var(--accent);text-transform:uppercase;
+  margin-bottom:8px;
+}
+.chapter-num{
+  font-size:52px;color:var(--red);opacity:.18;
+  font-style:italic;line-height:1;
+  position:absolute;top:18px;right:22px;
+}
+.page-title{
+  font-size:19px;color:var(--text);
+  font-style:italic;line-height:1.35;
+  margin-bottom:10px;
+}
+.rule{
+  width:36px;height:1px;
+  background:var(--red2);
+  margin:10px 0;
+}
+.theme-line{
+  font-size:11px;color:var(--accent);
+  font-style:italic;line-height:1.7;
+  margin-bottom:12px;
+}
+.pull-quote{
+  font-size:11.5px;color:#cca8cc;
+  font-style:italic;line-height:1.75;
+  border-left:2px solid var(--red);
+  padding:4px 0 4px 14px;
+  margin:12px 0;
+}
+.tags{
+  display:flex;flex-wrap:wrap;gap:5px;
+  margin-top:14px;
+}
+.tag{
+  font-size:9px;background:#150f1c;
+  color:var(--accent);padding:3px 8px;
+  border:1px solid var(--faint);
+  border-radius:2px;letter-spacing:.5px;
+}
+.works-head{
+  font-size:9px;letter-spacing:3px;
+  color:var(--accent);text-transform:uppercase;
+  margin-bottom:14px;
+}
+.work-row{
+  display:flex;align-items:flex-start;
+  gap:11px;margin-bottom:13px;
+  padding-bottom:13px;
+  border-bottom:1px solid var(--border);
+}
+.work-row:last-of-type{border-bottom:none;}
+.w-cover{
+  width:38px;height:52px;
+  border-radius:2px;flex-shrink:0;
+  overflow:hidden;
+  border:1px solid var(--border);
+}
+.w-cover img{width:100%;height:100%;object-fit:cover;display:block;}
+.w-cover-text{
+  width:38px;height:52px;
+  border-radius:2px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:7px;text-align:center;line-height:1.4;padding:4px;
+}
+.w-info h4{
+  font-size:12px;color:var(--text);
+  font-style:italic;margin-bottom:2px;
+}
+.w-info .meta{
+  font-size:9px;color:var(--dim);margin-bottom:4px;
+}
+.w-info .blurb{
+  font-size:9px;color:#5a3a5a;line-height:1.55;
+}
+.read-btn{
+  display:block;
+  background:none;
+  border:1px solid var(--red);
+  color:#e8a0b0;
+  font-family:Georgia,serif;
+  font-size:10px;letter-spacing:2px;
+  text-transform:uppercase;
+  padding:9px;cursor:pointer;
+  width:calc(100% - 52px);
+  text-align:center;
+  transition:background .2s,color .2s;
+  position:absolute;bottom:24px;left:26px;
+}
+.read-btn:hover{background:var(--red);color:var(--text);}
+
+/* ── Nav ── */
+#nav{
+  display:flex;align-items:center;gap:20px;
+}
+.nbtn{
+  background:none;
+  border:1px solid var(--faint);
+  color:var(--dim);
+  font-family:Georgia,serif;
+  font-size:11px;letter-spacing:2px;
+  text-transform:uppercase;
+  padding:7px 18px;
+  cursor:pointer;transition:all .2s;
+}
+.nbtn:hover{border-color:var(--accent);color:var(--text);}
+#pnum{
+  font-size:10px;color:var(--faint);
+  letter-spacing:2px;min-width:80px;text-align:center;
+}
+
+/* ── Essay overlay ── */
+#overlay{
+  display:none;
+  position:fixed;inset:0;
+  background:rgba(9,7,12,.97);
+  z-index:200;overflow-y:auto;
+  padding:48px 24px 64px;
+}
+#overlay.on{display:block;}
+.close-x{
+  position:fixed;top:20px;right:24px;
+  background:none;border:1px solid var(--faint);
+  color:var(--dim);font-family:Georgia,serif;
+  font-size:10px;letter-spacing:2px;text-transform:uppercase;
+  padding:7px 14px;cursor:pointer;z-index:201;
+  transition:all .2s;
+}
+.close-x:hover{border-color:var(--accent);color:var(--text);}
+.essay-wrap{max-width:660px;margin:0 auto;}
+.essay-wrap h1{
+  font-size:26px;color:var(--text);
+  font-style:italic;margin-bottom:6px;
+}
+.essay-wrap .emeta{
+  font-size:10px;color:var(--dim);
+  letter-spacing:2px;text-transform:uppercase;
+  border-bottom:1px solid var(--border);
+  padding-bottom:14px;margin-bottom:28px;
+}
+.essay-wrap p{
+  font-size:15px;color:#d4b8d4;
+  line-height:1.85;margin-bottom:18px;
+  text-indent:2em;
+}
+.essay-wrap p:first-of-type{text-indent:0;}
+</style>
+</head>
+<body>
+
+<div id="shell">
+  <div id="book-wrap">
+    <div id="book">
+
+      <!-- 0: Front Cover -->
+      <div class="page cover">
+        <div class="cover-frame"></div>
+        <div style="position:relative;z-index:1">
+          <div style="font-size:9px;letter-spacing:4px;color:var(--gold);text-transform:uppercase">A Portfolio</div>
+          <div class="ornament"></div>
+          <div style="font-size:30px;color:var(--text);font-style:italic;line-height:1.25">Writing Medicine</div>
+          <div style="font-size:13px;color:var(--dim);font-style:italic;margin-top:6px">Stories of Illness and Healing</div>
+          <div class="ornament"></div>
+          <div style="font-size:10px;color:var(--faint);letter-spacing:4px">✦ &nbsp; ✦ &nbsp; ✦</div>
+          <div style="font-size:14px;color:var(--dim);margin-top:22px;letter-spacing:1px">Saiakhil Chilaka</div>
+          <div style="font-size:10px;color:var(--faint);margin-top:4px">Cornell University · 2026</div>
+          <div style="font-size:9px;color:#2a1030;margin-top:3px">Dr. Wang</div>
+        </div>
+      </div>
+
+      <!-- 1: Introduction (left of first spread) -->
+      <div class="page" style="background:var(--page2);display:flex;flex-direction:column;justify-content:space-between;">
+        <div>
+          <div class="label">Introduction</div>
+          <div class="page-title" style="font-size:16px">What This Course Asked of Me</div>
+          <div class="rule"></div>
+          <p style="font-size:12px;color:#cca8cc;line-height:1.85;margin-top:14px">
+            This portfolio collects the reading and writing I did in <em>Writing Medicine: Stories of Illness and Healing</em>. The course moved across novels, short stories, film, and journalism, all asking one question in different registers: what does suffering do to people, and what do people do with suffering?
+          </p>
+          <p style="font-size:12px;color:#cca8cc;line-height:1.85;margin-top:12px">
+            The works I read (Lu Xun, Michael Ondaatje, Yu Hua, Toni Morrison, Kazuo Ishiguro) each approached that question differently. What surprised me was how often the answer wasn't about healing at all. It was about what breaks, what persists, and what belief alone cannot fix.
+          </p>
+          <p style="font-size:12px;color:#cca8cc;line-height:1.85;margin-top:12px">
+            Three essays follow. Each one is wrong in some small way I can still see. That's what writing is.
+          </p>
+        </div>
+        <div style="font-size:9px;color:var(--faint);letter-spacing:1px;font-style:italic;text-align:right">Turn the page →</div>
+      </div>
+
+      <!-- 2: blank/ornamental (right of first spread) -->
+      <div class="page" style="display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--page);">
+        <div style="text-align:center;opacity:.35">
+          <div style="font-size:9px;letter-spacing:4px;color:var(--gold);text-transform:uppercase;margin-bottom:16px">Contents</div>
+          <div style="font-size:11px;color:var(--dim);line-height:2.4;font-style:italic">
+            <div>I &nbsp;·&nbsp; Blind Faith</div>
+            <div>II &nbsp;·&nbsp; What War Unmakes</div>
+            <div>III &nbsp;·&nbsp; The Trap Without a Face</div>
+          </div>
+          <div style="width:40px;height:1px;background:var(--red);margin:20px auto"></div>
+          <div style="font-size:9px;color:var(--faint);letter-spacing:2px">Also on the Shelf</div>
+        </div>
+      </div>
+
+      <!-- 3: Ch I Theme (left) -->
+      <div class="page" style="display:flex;flex-direction:column;justify-content:space-between;">
+        <div>
+          <div class="chapter-num">I</div>
+          <div class="label">First Essay</div>
+          <div class="page-title">Blind Faith</div>
+          <div class="rule"></div>
+          <div class="theme-line">
+            How blind faith in tradition replaces genuine care, and how belief alone sustains suffering rather than healing it.
+          </div>
+          <div class="pull-quote">
+            "The characters' unwavering faith in tradition allows them to feel hopeful and responsible while remaining blind to the human suffering their actions depend on."
+          </div>
+          <div class="tags">
+            <span class="tag">irony</span>
+            <span class="tag">tradition</span>
+            <span class="tag">empathy</span>
+            <span class="tag">dogma</span>
+            <span class="tag">social critique</span>
+          </div>
+        </div>
+        <div style="font-size:9px;color:var(--faint);font-style:italic">Written Jan 30, 2026</div>
+      </div>
+
+      <!-- 4: Ch I Works (right) -->
+      <div class="page" style="display:flex;flex-direction:column;position:relative;">
+        <div class="works-head">Works Explored</div>
+
+        <div class="work-row">
+          <div class="w-cover-text" style="background:linear-gradient(135deg,#5a0818,#2a030c);color:#c8a0a8;border:1px solid #3a1020;">
+            Medicine<br><span style="font-size:6px;color:#7a4050">Lu Xun</span>
+          </div>
+          <div class="w-info">
+            <h4>Medicine</h4>
+            <div class="meta">Lu Xun · Short Story · 1919</div>
+            <div class="blurb">A family purchases a blood-soaked bun believing it will cure their dying son, not knowing the blood came from an executed revolutionary.</div>
+          </div>
+        </div>
+
+        <div class="work-row">
+          <div class="w-cover-text" style="background:linear-gradient(135deg,#08203a,#030f20);color:#a0b8d8;border:1px solid #103060;font-size:6.5px;line-height:1.5;">
+            The<br>New<br>Yorker
+          </div>
+          <div class="w-info">
+            <h4>The Deaths—and Lives—of Two Sons</h4>
+            <div class="meta">The New Yorker · Article</div>
+            <div class="blurb">A meditation on grief, family, and the impossible task of making meaning from loss.</div>
+          </div>
+        </div>
+
+        <button class="read-btn" onclick="openEssay('e1')">Read Essay: Blind Faith →</button>
+      </div>
+
+      <!-- 5: Ch II Theme (left) -->
+      <div class="page" style="display:flex;flex-direction:column;justify-content:space-between;">
+        <div>
+          <div class="chapter-num">II</div>
+          <div class="label">Second Essay</div>
+          <div class="page-title">What War Unmakes</div>
+          <div class="rule"></div>
+          <div class="theme-line">
+            War doesn't just wound the body. It dismantles identity piece by piece: name, profession, nationality, the bonds that tell you who you are.
+          </div>
+          <div class="pull-quote">
+            "Identity is not something that you can't lose. It is something extremely fragile, contingent, and ultimately subject to the forces around you."
+          </div>
+          <div class="tags">
+            <span class="tag">identity</span>
+            <span class="tag">war</span>
+            <span class="tag">nationality</span>
+            <span class="tag">loss</span>
+            <span class="tag">memory</span>
+          </div>
+        </div>
+        <div style="font-size:9px;color:var(--faint);font-style:italic">Written Jan 30, 2026</div>
+      </div>
+
+      <!-- 6: Ch II Works (right) -->
+      <div class="page" style="display:flex;flex-direction:column;position:relative;">
+        <div class="works-head">Works Explored</div>
+
+        <div class="work-row">
+          <div class="w-cover">
+            <img src="assets/Screenshot 2026-04-27 at 1.36.54 PM.png" alt="The English Patient">
+          </div>
+          <div class="w-info">
+            <h4>The English Patient</h4>
+            <div class="meta">Michael Ondaatje · Novel · 1992</div>
+            <div class="blurb">Four people shelter in a bombed Italian villa at WWII's end. Each has been stripped of something essential to who they were.</div>
+          </div>
+        </div>
+
+        <div class="work-row">
+          <div class="w-cover">
+            <img src="assets/Screenshot 2026-04-27 at 1.36.35 PM.png" alt="Beloved">
+          </div>
+          <div class="w-info">
+            <h4>Beloved</h4>
+            <div class="meta">Toni Morrison · Novel · 1987</div>
+            <div class="blurb">Memory as haunting. The past doesn't stay in the past. It inhabits the body and reshapes the present.</div>
+          </div>
+        </div>
+
+        <button class="read-btn" onclick="openEssay('e2')">Read Essay: What War Unmakes →</button>
+      </div>
+
+      <!-- 7: Ch III Theme (left) -->
+      <div class="page" style="display:flex;flex-direction:column;justify-content:space-between;">
+        <div>
+          <div class="chapter-num">III</div>
+          <div class="label">Third Essay</div>
+          <div class="page-title">The Trap Without a Face</div>
+          <div class="rule"></div>
+          <div class="theme-line">
+            The trap doesn't look like a trap. Social structures force individuals into cycles they didn't design and cannot escape through personal virtue alone.
+          </div>
+          <div class="pull-quote">
+            "The cycles that destroy ordinary people are not responsive to the quality of those people. They operate at a scale that individual virtue cannot reach."
+          </div>
+          <div class="tags">
+            <span class="tag">systems</span>
+            <span class="tag">cycles</span>
+            <span class="tag">class</span>
+            <span class="tag">gender</span>
+            <span class="tag">survival</span>
+          </div>
+        </div>
+        <div style="font-size:9px;color:var(--faint);font-style:italic">Written Jan 30, 2026</div>
+      </div>
+
+      <!-- 8: Ch III Works (right) -->
+      <div class="page" style="display:flex;flex-direction:column;position:relative;">
+        <div class="works-head">Works Explored</div>
+
+        <div class="work-row">
+          <div class="w-cover">
+            <img src="assets/Screenshot 2026-04-27 at 1.37.02 PM.png" alt="To Live">
+          </div>
+          <div class="w-info">
+            <h4>To Live</h4>
+            <div class="meta">Yu Hua · Novel · 1993</div>
+            <div class="blurb">A man survives civil war, Land Reform, and the Cultural Revolution watching everyone he loves die. History doesn't care about virtue.</div>
+          </div>
+        </div>
+
+        <div class="work-row">
+          <div class="w-cover-text" style="background:linear-gradient(135deg,#181010,#080505);color:#907060;border:1px solid #281808;font-size:7px;line-height:1.5;">
+            The<br>Goddess<br><span style="font-size:6px;color:#503020">1934</span>
+          </div>
+          <div class="w-info">
+            <h4>The Goddess</h4>
+            <div class="meta">Wu Yonggang · Film · 1934</div>
+            <div class="blurb">A Shanghai mother sacrifices everything for her son's education. A gangster, a prejudiced community, and an indifferent economy form the walls of her cage.</div>
+          </div>
+        </div>
+
+        <button class="read-btn" onclick="openEssay('e3')">Read Essay: The Trap Without a Face →</button>
+      </div>
+
+      <!-- 9: Shelf (left of last spread) -->
+      <div class="page" style="display:flex;flex-direction:column;">
+        <div class="label">Also on the Shelf</div>
+        <div class="page-title" style="font-size:15px">Works Read, Not Written About</div>
+        <div class="rule"></div>
+        <p style="font-size:11px;color:#4a2a4a;line-height:1.65;margin:12px 0 18px;font-style:italic">
+          Some books change you in ways you can't yet articulate.
+        </p>
+
+        <div style="display:flex;gap:16px;margin-top:4px;">
+          <div style="flex:1;text-align:center;">
+            <div style="width:58px;height:80px;margin:0 auto 8px;overflow:hidden;border-radius:2px;border:1px solid var(--border);">
+              <img src="assets/Screenshot 2026-04-27 at 1.36.44 PM.png" alt="Klara and the Sun" style="width:100%;height:100%;object-fit:cover;display:block;">
+            </div>
+            <div style="font-size:11px;color:var(--text);font-style:italic;line-height:1.3">Klara and the Sun</div>
+            <div style="font-size:9px;color:var(--dim);margin-top:2px">Kazuo Ishiguro</div>
+            <p style="font-size:9px;color:#4a2a4a;margin-top:8px;line-height:1.6;text-align:left">An artificial friend narrates the human world she was built to serve, slowly observing what devotion costs when it goes unreciprocated.</p>
+          </div>
+          <div style="flex:1;text-align:center;">
+            <div style="width:58px;height:80px;margin:0 auto 8px;overflow:hidden;border-radius:2px;border:1px solid var(--border);">
+              <img src="assets/Screenshot 2026-04-27 at 1.36.35 PM.png" alt="Beloved" style="width:100%;height:100%;object-fit:cover;display:block;">
+            </div>
+            <div style="font-size:11px;color:var(--text);font-style:italic;line-height:1.3">Beloved</div>
+            <div style="font-size:9px;color:var(--dim);margin-top:2px">Toni Morrison</div>
+            <p style="font-size:9px;color:#4a2a4a;margin-top:8px;line-height:1.6;text-align:left">Memory is not recollection. It is a thing that lives in the body and refuses to leave until it is witnessed.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 10: Closing Reflection (right of last spread) -->
+      <div class="page" style="background:var(--page2);display:flex;flex-direction:column;justify-content:space-between;">
+        <div>
+          <div class="label">Closing</div>
+          <div class="page-title" style="font-size:16px">What I Carry Out</div>
+          <div class="rule"></div>
+          <p style="font-size:12px;color:#cca8cc;line-height:1.85;margin-top:14px">
+            I came into this course thinking literature about illness was about the body. I was wrong. It is about what the body reveals: the beliefs that outlast evidence, the identities that war strips away, the systems that outlive any single person's attempt to escape them.
+          </p>
+          <p style="font-size:12px;color:#cca8cc;line-height:1.85;margin-top:12px">
+            The best writing in this course (Lu Xun's flat irony, Ondaatje's lyric grief, Yu Hua's blunt accumulation of loss) didn't console. It clarified. It named what was happening at the scale where names matter most.
+          </p>
+          <p style="font-size:12px;color:#cca8cc;line-height:1.85;margin-top:12px">
+            I want to write like that someday.
+          </p>
+        </div>
+        <div style="text-align:center">
+          <div style="width:36px;height:1px;background:var(--red);margin:0 auto 10px"></div>
+          <div style="font-size:9px;color:var(--faint);letter-spacing:2px;text-transform:uppercase">End of Portfolio</div>
+        </div>
+      </div>
+
+      <!-- 11: Back Cover -->
+      <div class="page cover" style="background:linear-gradient(155deg,#0b0410 0%,#150820 50%,#090310 100%);">
+        <div class="cover-frame"></div>
+        <div style="position:relative;z-index:1;text-align:center">
+          <div style="font-size:9px;letter-spacing:4px;color:#2a1030;text-transform:uppercase;margin-bottom:20px">Writing Medicine</div>
+          <div style="font-size:12px;color:#2d1535;font-style:italic;line-height:1.9;max-width:180px;margin:0 auto">
+            "Belief alone is not only insufficient but also detrimental to the healing of society as a whole."
+          </div>
+          <div class="ornament" style="margin-top:20px"></div>
+          <div style="font-size:9px;color:#1a0820;letter-spacing:2px">Cornell · 2026</div>
+        </div>
+      </div>
+
+    </div><!-- #book -->
+  </div><!-- #book-wrap -->
+
+  <div id="nav">
+    <button class="nbtn" id="btn-prev" onclick="book.flipPrev()">← Prev</button>
+    <div id="pnum">Cover</div>
+    <button class="nbtn" id="btn-next" onclick="book.flipNext()">Next →</button>
+  </div>
+</div><!-- #shell -->
+
+<!-- Essay Overlay -->
+<div id="overlay">
+  <button class="close-x" onclick="closeEssay()">✕ Close</button>
+  <div class="essay-wrap" id="essay-body"></div>
+</div>
+
+<script src="https://unpkg.com/page-flip/dist/js/page-flip.browser.js"></script>
+<script>
+// ── Dimensions ──────────────────────────────────────────────
+const vw = window.innerWidth, vh = window.innerHeight;
+const bookH = Math.min(560, vh * 0.70);
+const pageW = Math.min(420, vw * 0.44);
+
+// ── Init PageFlip ────────────────────────────────────────────
+const book = new St.PageFlip(document.getElementById('book'), {
+  width: pageW,
+  height: bookH,
+  size: 'fixed',
+  showCover: true,
+  mobileScrollSupport: false,
+  usePortrait: false,
+  swipeDistance: 30,
+  clickEventForward: false,
+  startZIndex: 0,
+  flippingTime: 700,
+});
+book.loadFromHTML(document.querySelectorAll('.page'));
+
+const totalSpreads = 6; // cover + 4 essay spreads + back
+book.on('flip', e => {
+  const p = e.data;
+  if (p === 0) { document.getElementById('pnum').textContent = 'Cover'; return; }
+  if (p >= book.getPageCount() - 1) { document.getElementById('pnum').textContent = 'End'; return; }
+  const spread = Math.ceil(p / 2);
+  document.getElementById('pnum').textContent = spread + ' / 5';
+});
+
+// Arrow keys
+document.addEventListener('keydown', e => {
+  if (document.getElementById('overlay').classList.contains('on')) {
+    if (e.key === 'Escape') closeEssay();
+    return;
+  }
+  if (e.key === 'ArrowRight') book.flipNext();
+  if (e.key === 'ArrowLeft')  book.flipPrev();
+});
+
+// ── Essays ───────────────────────────────────────────────────
+const essays = {
+  e1: {
+    title: 'Blind Faith',
+    meta: 'Essay I · Writing Medicine: Stories of Illness and Healing · Jan 30, 2026',
+    paras: [
+      `Although the story "Medicine" focuses on parents trying to find a cure for their sick child, the author exposes how their certainty in culture and tradition prevents them from feeling empathy and reflection and ultimately finding meaningful change. In "Medicine," Lu Xun uses irony to show that blind faith in traditional "medicine" replaces genuine care and empathy, revealing how blind belief becomes a force that sustains the status quo of suffering rather than healing it and prevents reflection or meaningful change.`,
+      `Lu Xun first reveals this irony through the parents' unwavering confidence in the blood soaked bun itself, which in their mind replaces any sort of other care that the child needs. When Little Chuan is given the blood soaked bun, the mother says "Eat it up… then you'll be better." The unwavering confidence of the mother here is extremely striking and meant to teach us a lesson. Rather than even checking how her son feels after he receives the so-called "medicine", the mother is completely sure that it will work; she treats the healing as an inevitability without even the slightest bit of doubt. The phrase "then you'll be better" suggests this inevitability, as if recovery was guaranteed after the "medicine" is consumed. Lu Xun's irony lies in the gap between this intention and outcome. The parents believe that they're doing something good for the child and making sure of the child's well being but their faith prevents them from this. Their faith prevents them from noticing that nothing is improving in their child's condition and he's leaning closer to death. Their faith clouds their judgement and care for their child suffers because of it. By portraying this certainty as comforting to us readers rather than thoughtful, the author critiques this culture and tradition and shows us how it allows people to feel like they're doing something good when they're actually worsening their condition.`,
+      `The blind confidence is further intensified through the exaggerated assurances surrounding the medicine by the rest of the characters, further illustrating how this blind faith discourages questioning or change. Xun writes, "'This is a guaranteed cure! Not like other things!' declared the heavy-jowled man. 'Just think, brought back warm, and eaten warm!'" This insistence on the word "guaranteed" highlights the irony at the center of the story. Everyone in the entire story thinks that the "medicine" working is a certainty and in the end it ultimately fails. Xun uses this moment to show us how belief hardens into dogma and failure in it isn't even seen as an option in the world. Because the cure is seen as unquestionable, no alternative is ever considered, and learning doesn't occur when it fails. In this case, hope in this "medicine" becomes rigid and dangerous. The characters cling to this belief because it's easy, even though it results and reinforces a system in which suffering continues and remains unchallenged.`,
+      `The most disturbing irony in the story emerges when Lu Xun reveals the moral cost of this blind faith. Healing ultimately gets built on violence and empathy is entirely erased. This is especially explicit in the casual dismissal of the executed revolutionary. Xun writes, "Nothing to be sorry about in beating a wretch like that." By reducing this man to a "wretch", society completely strips him of his humanity and makes his suffering morally insignificant. This same dehumanization is what allows his blood to be turned into this "medicine" rather than his life being mourned. His execution can be accepted and justified as he's not even seen as fully human. Xun's irony lies in this fact that finding a cure to save a life requires violence and dehumanization towards another.`,
+      `Throughout the irony in "Medicine", Lu Xun ultimately argues that belief alone is not only insufficient but also detrimental to the healing of society as a whole, as it replaces and destroys any chance for empathy and reflection. The characters unwavering faith in tradition allows them to feel hopeful and responsible while remaining blind to the human suffering their actions depend on.`,
+    ]
+  },
+  e2: {
+    title: 'What War Unmakes',
+    meta: 'Essay II · Writing Medicine: Stories of Illness and Healing · Jan 30, 2026',
+    paras: [
+      `Michael Ondaatje's The English Patient is on the surface just a story about 4 people who take shelter at an Italian Villa towards the end of World War II. But when you dig beneath this layer, the book is an introspective masterpiece that explores what War does to the self. Each of the novel's main characters has been stripped of some part of their identity or component of themselves that they had before the war began. Ondaatje doesn't treat identity as something that you can't lose. Instead, she treats identity like something extremely fragile, contingent, and ultimately subject to the forces around you. Through a close reading of the novel's treatment of names, professions, bodies, and emotional bonds, this essay examines how Ondaatje constructs identity as a structure that war dismantles piece by piece, leaving his characters to rebuild themselves from whatever fragments of their identity they're left with.`,
+      `One of the most brutal illustrations of one's identity being destroyed appears through one of the main characters, Caravaggio. Before the war, Caravaggio was a thief, a man whose entire identity and self depended on this one skill that his profession demanded. Ondaatje captures this devastating loss in one single sentence: "He had been a thief. Now he was a man without thumbs." The bluntness of this line gives it power. There is no metaphor, no lyricism, no cushioning, it just gives us the truth and tells us what happened. These two sentences sit side by side in a devastating before and after photograph of Caravaggio. The gap between these before and after photographs contains a world of suffering that Ondaatje refuses to narrate directly. She shows a strong contrast between "a thief" and "a man without thumbs" and this isn't a simple contrast between ability and disability either; this is a contrast between an identity and the destruction of one. A thief depends on precision, something that you must need thumbs for. To lose one's thumbs especially for Caravaggio is to lose the instrument to one's own identity. Now, without his thumbs, he can't pick a lock, can't grip a knife and can't do the one thing that made him who he was.`,
+      `Similar to Caravaggio, the English patient's identity is destroyed through the erasure of his nationality and even his name. After his accident, the patient lies in the villa burned beyond recognition. His skin is charred beyond anonymity, and no one can determine where he comes from or what his allegiances are. The novel resists resolving this ambiguity for most of its length, trying to show us that his identity for the most part is completely erased. The patient articulates this idea when he says: "We were German, English, Hungarian, African—all of us insignificant to them. Gradually, we became nationless. I came to hate nations. We are deformed by nation-states." The word deformed here is absolutely crucial. It shows us that national identity isn't simply a label that one wears but instead it's a force that physically reshapes oneself and thus one's identity. It bends individuals into forms that serve the state's purpose rather than their own. To become "nationless" symbolizes both a loss and a liberation, but one that leaves the patient in a state of limbo, unable to claim anything or any belonging at all.`,
+      `Ondaatje deepens this theme through the patient's commonplace book, a physical object that stands in for an identity that no longer exists. In "his 1890 edition of Herodotus' Histories" are "maps, diary entries, writings in many languages, paragraphs cut out of other books. All that is missing is his own name." The book holds traces of everywhere the English patient has been and everything he has read. It is a mosaic of cultures and languages, one that mirrors the novel's own collage-like structure. But the owner's name is nowhere in it. What you get is a portrait of a self with the self removed: fragments of the world filtered through one person's attention, with no organizing center holding them together. This is Ondaatje's metaphor for what war does to identity. It scatters a person into pieces and erases whatever held those pieces in place.`,
+      `Where the English patient and Caravaggio show identity being erased or fractured, Hana's arc reveals something slightly different: how war disrupts the emotional and relational bonds through which people understand themselves. Hana is a young Canadian nurse who lost her father to the war. Her grief has left her hollowed out, unable to reconnect with the life she had before. She devotes herself entirely to the English patient, and the novel suggests this devotion is less a choice than a symptom of displacement. The novel captures this in a line that quietly overturns a basic assumption about human connection: "A man not of your own blood can break upon your emotions more than someone of your own blood." Hana does not choose to care this much about the patient. The war has simply rearranged her emotional landscape so that a stranger now occupies the space her father left empty. By caring for a man who has no name, no nation, and no recoverable past, she is caring for the idea of a person rather than an actual known individual.`,
+    ]
+  },
+  e3: {
+    title: 'How Society Creates Traps in To Live and The Goddess',
+    meta: 'Essay III · Writing Medicine: Stories of Illness and Healing · Jan 30, 2026',
+    paras: [
+      `Sometimes, a trap doesn't actually look like a trap. It looks like a regular day and a regular life. Yu Hua's novel To Live and Wu Yonggang's 1934 film Goddess are separated by context and form, but they share a very similar theme: the way social structures force individuals into cycles they did not design and cannot escape through personal effort alone. Fugui in To Live inherits a world defined by gambling, war, and political upheaval that reduces him from a landowner to a peasant and strips him of everyone and everything he loves. The Mother in Goddess is caught between poverty, a predatory gangster, and a society that judges her for the very work it has left her no alternative but to do. In both works, the trap is not any single villain or decision. It is systemic, and it reproduces itself through the people who are already inside it.`,
+      `At first, Fugui's fall from wealth appears to be a moral failure and the result of his addiction to gambling and disregard for his family. But Yu Hua complicates this reading almost immediately. The larger historical forces bearing down on China, from the civil war to Land Reform to the Great Leap Forward, mean that personal responsibility is never the only variable. When Fugui loses the family land to Long Er at the gambling table, it seems like the worst outcome imaginable. Years later, when the Communist government executes Long Er for being a landlord, Fugui realizes that his ruin actually saved his life: "If I hadn't lost our land, I would have been the one executed. Losing everything I had was actually what helped me live." The irony here is how cycles of suffering operate independently of individual intention. Fugui does not escape punishment because he made better choices. He escapes because history made a different demand of him at the right moment. The trap doesn't care about virtue.`,
+      `This pattern of accidental survival versus unearned death reoccurs so consistently in the novel that it starts feeling like an argument instead of a coincidence. Yu Hua is not interested in the idea that good people are rewarded and bad people are punished. The novel actively dismantles that comfort. Each death is disproportionate, almost absurdist in how little it matches the life that preceded it. Yu Hua uses this disproportion to make a structural point: the cycles that destroy ordinary people are not responsive to the quality of those people. They operate at a scale that individual virtue cannot reach.`,
+      `The Goddess maps a different kind of cycle, one that operates through gender and economic exclusion rather than class and political violence. The mother works as a prostitute only because the film gives her no other visible path to support her child. The recurring visual motif of her arms tied behind her back frames her situation as structural from the start. The image of the mother restrained while still breastfeeding her child captures how she cannot escape her circumstances regardless of what she does or how hard she tries. The gangster himself functions as a personification of the structural forces that constrain her. He does not need complicated motivation. He takes her money because he can. The film frames him as physically dominant in almost every shared scene, visualizing entrapment, the way a person can be surrounded by something without being touched.`,
+      `What makes the film especially powerful is that the mother does not remain passive. She saves money for her son's education. She enrolls him in a private school. But her efforts collide with social structures that refuse to absorb her on different terms. The gossiping parents get her son expelled. When the principal confronts her about her profession, she does not deny it. She admits everything with a kind of exhausted conviction, as if she has been waiting for someone to finally ask. The film makes clear that her sacrifice and her stigma are the same thing: the society that condemns her is the same one that created the conditions requiring her sacrifice in the first place.`,
+      `Both endings refuse the comfort of resolution. To Live ends in a kind of quiet that is not peace. Fugui is old. He says the ox will live a good life, which sounds like hope but reads more like endurance. Yu Hua gives him no resolution nor redemption. The mother in The Goddess is imprisoned. The one thing she can still possess is a hope she has no ability to verify or protect. Both works treat the cycle as something that transmits across generations. The regime changes. The expendability does not.`,
+    ]
+  }
+};
+
+function openEssay(id) {
+  const e = essays[id];
+  document.getElementById('essay-body').innerHTML =
+    `<h1>${e.title}</h1><div class="emeta">${e.meta}</div>` +
+    e.paras.map(p => `<p>${p}</p>`).join('');
+  const ov = document.getElementById('overlay');
+  ov.classList.add('on');
+  ov.scrollTop = 0;
+}
+function closeEssay() {
+  document.getElementById('overlay').classList.remove('on');
+}
+</script>
+</body>
+</html>
